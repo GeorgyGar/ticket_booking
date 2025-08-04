@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: ticket-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ticketbooking
+      POSTGRES_USER: ticket
+      POSTGRES_PASSWORD: ticket
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticket-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ticketbooking
+      SPRING_DATASOURCE_USERNAME: ticket
+      SPRING_DATASOURCE_PASSWORD: ticket
+      SPRING_SQL_INIT_MODE: always
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
